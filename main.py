@@ -1,25 +1,7 @@
 import cv2
 import os
-from PIL import Image, ImageEnhance
 from cvzone.HandTrackingModule import HandDetector
-
-def  reduceOpc(im, opacity):
-    """
-    Return an image with reduce opacity
-    args:
-        im: Image to reduce must Pillow read
-        opacity: alpha number
-    """
-    assert opacity >= 0 and opacity <= 1
-    if im.mode != 'RGBA':
-        im = im.convert('RGBA')
-    else:
-        im = im.copy()
-    
-    alpha = im.split()[3]
-    alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
-    im.putalpha(alpha)
-    return im
+from DragImg import DragImg
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
@@ -28,14 +10,29 @@ cap.set(4, 720)
 detector = HandDetector(detectionCon=0.65)
 
 dirPath = './img/pieces'
-pieceImg = os.listdir(dirPath)
+piecePath = os.listdir(dirPath)
+listImg = []
+temp = 0
+for x, pathPiece in enumerate(piecePath):
 
-dirPath = './img/pieces'
-pieceImg = os.listdir(dirPath)
+    if 'png' in pathPiece:
+        imgType = 'png'
+    else:
+        imgType = 'jpg'
+    
+    if x > 5:
+        yPos = 300
+        xPos = 50 + temp * 200
+        temp += 1
+    else:
+        yPos = 100
+        xPos = 50 + x * 200
+    
+    listImg.append(DragImg(f'{dirPath}/{pathPiece}', [xPos,yPos], imgType))
 
-img1 = cv2.imread('img/pieces/piece_0.png', cv2.IMREAD_UNCHANGED)
-img1 = cv2.resize(img1, (150, 150))
-ox, oy = 200, 200
+# img1 = cv2.imread('img/pieces/piece_0.png', cv2.IMREAD_UNCHANGED)
+# img1 = cv2.resize(img1, (150, 150))
+# ox, oy = 200, 200
 
 # img = Image.open("img/pieces/piece_0.png")
 # img.show()
@@ -48,22 +45,24 @@ while True:
     hands, img = detector.findHands(img, flipType=False)
 
     if hands :
-       lmList = hands[0]['lmList']
+        lmList = hands[0]['lmList']
 
-       length, info, img  = detector.findDistance(lmList[8][:2], lmList[12][:2], img)
-       print(length)
-       
-       if length < 60 :
-        cursor = lmList[8] 
-        if ox < cursor[0] < ox + w and oy < cursor[1] < oy + h :
-          ox,oy = cursor[0] - w //2, cursor[1] - h // 2
+        length, info, img  = detector.findDistance(lmList[8][:2], lmList[12][:2], img)
+        
+        if length < 50 :
+            cursor = lmList[8]
+            
+            for imgObject in listImg:
+                if imgObject.draged == True:
+                    imgObject.update(cursor)
+    
     
     try:
-
-      h, w, _ = img1.shape
-      img[oy:oy+h, ox:ox+w] = img1
-      #img = cvzone.overlayPNG(img, img1, [ox,oy])
-
+        for imgObject in listImg:
+            h, w = imgObject.size
+            ox, oy = imgObject.posOrigin
+            # draw for PNG images
+            img[oy:oy+h, ox:ox+w] = imgObject.img
     except:
       pass
 
