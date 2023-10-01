@@ -49,12 +49,11 @@ while True:
 
         length, info, img  = detector.findDistance(lmList[8][:2], lmList[12][:2], img)
         
-        if length < 50 :
+        if length < 20 :
             cursor = lmList[8]
             
             for imgObject in listImg:
-                if imgObject.draged == True:
-                    imgObject.update(cursor)
+                imgObject.update(cursor)
     
     
     try:
