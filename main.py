@@ -37,7 +37,7 @@ for x, pathPiece in enumerate(piecePath):
     
     if x > 5:
         yPos = 300
-        xPos = 50 + temp * 200
+        xPos = 350 + temp * 200
         temp += 1
     else:
         yPos = 100
@@ -48,7 +48,7 @@ for x, pathPiece in enumerate(piecePath):
 # img1 = cv2.imread('img/pieces/piece_0.png', cv2.IMREAD_UNCHANGED)
 # img1 = cv2.resize(img1, (150, 150))
 # ox, oy = 200, 200
-
+# cv2.imshow("image 1", listImg[1].img)
 # img = Image.open("img/pieces/piece_0.png")
 # img.show()
 # img = reduceOpc(img, 0.8)
@@ -69,9 +69,8 @@ while True:
             cursor = lmList[8]
             
             for imgObject in listImg:
-                imgObject.update(cursor)
-    
-    
+                imgObject.update(cursor)  
+
     try:
         for imgObject in listImg:
             h, w = imgObject.size

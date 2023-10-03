@@ -7,10 +7,10 @@ class DragImg():
         self.path = path
         self.name = name;
         
-        if self.imgType == 'png':
-            self.img = cv2.imread(self.path, cv2.IMREAD_UNCHANGED)
-        else:
-            self.img = cv2.imread(self.path)
+        # if self.imgType == 'png':
+        #     self.img = cv2.imread(self.path, cv2.IMREAD_UNCHANGED)
+        # else:
+        self.img = cv2.imread(self.path)
         
         self.img = cv2.resize(self.img, (150, 150))
         
