@@ -1,10 +1,11 @@
 import cv2
 
 class DragImg():
-    def __init__(self, path, posOrigin, imgType):
+    def __init__(self, path, posOrigin, imgType, name):
         self.posOrigin = posOrigin
         self.imgType = imgType
         self.path = path
+        self.name = name;
         
         if self.imgType == 'png':
             self.img = cv2.imread(self.path, cv2.IMREAD_UNCHANGED)
