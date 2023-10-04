@@ -18,6 +18,19 @@ def is_object_inside_box(imgObject, box):
     return (x1-10 <= ox <= x2+10) and (y1-10 <= oy <= y2+10) 
 
 
+def check(listImg): 
+    for eli in listImg :
+        for elj in  listImg :
+            if eli == elj : continue
+
+            oxi, oyi = eli.posOrigin
+            oxj, oyj = elj.posOrigin
+
+            if oxi == oxj and oyi==oyj : return False
+
+    return True
+
+
 cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
 cap.set(4, 720)
@@ -57,6 +70,23 @@ for x, pathPiece in enumerate(piecePath):
 while True:
     success, img = cap.read()
     img = cv2.flip(img, 1);
+    text = "Puzzle Game"
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1
+    font_thickness = 3
+
+    textlist = []
+
+    # Get the size of the text
+    (text_width, text_height), _ = cv2.getTextSize(text, font, font_scale, font_thickness)
+
+    # Calculate the position to place text at the top center
+    image_height, image_width, _ = img.shape
+    text_x = (image_width - text_width) // 2
+    text_y = text_height + 10
+
+    # Put the text on the image
+    cv2.putText(img, text, (text_x, text_y), font, font_scale, (0, 0, 0), font_thickness, lineType=cv2.LINE_AA)
     ans = 0;
     hands, img = detector.findHands(img, flipType=False)
     #print(hands);
@@ -69,7 +99,11 @@ while True:
             cursor = lmList[8]
             
             for imgObject in listImg:
-                imgObject.update(cursor)  
+                oxold, oyold = imgObject.posOrigin
+                imgObject.update(cursor)
+
+                if check (listImg) == False: imgObject.posOrigin = [oxold, oyold]  
+
 
     try:
         for imgObject in listImg:
@@ -118,6 +152,7 @@ while True:
 
     if is_object_inside_box(listImg[0], box1) :
         ans |= (1 << 0)
+
         #print("0")
     if is_object_inside_box(listImg[1], box2) :
         ans |= (1 << 1)
@@ -128,9 +163,18 @@ while True:
     if is_object_inside_box(listImg[3], box4) :
         ans |= (1 << 3)
         #print("3");q
+    
+    i = 0;
+    while(i < 4) :
+        if (ans &  (1 << i) > 0):
+            temp = "Kepingan ke-" + str(i+1) + " Berhasil ditempatkan";
+            cv2.putText(img, temp, (text_x+100, text_y+100 + (100 * i)), font, font_scale, (0, 0, 0), font_thickness, lineType=cv2.LINE_AA)
+
+        i+=1
 
     print(ans)
     if ans == 15 :
+        #cv2.putText(img, "Berhasil", (text_x+100, text_y+100), font, font_scale, (0, 0, 0), font_thickness, lineType=cv2.LINE_AA)
         print("Berhasil bang");
 
 
