@@ -30,15 +30,6 @@ for x, pathPiece in enumerate(piecePath):
     
     listImg.append(DragImg(f'{dirPath}/{pathPiece}', [xPos,yPos], imgType))
 
-# img1 = cv2.imread('img/pieces/piece_0.png', cv2.IMREAD_UNCHANGED)
-# img1 = cv2.resize(img1, (150, 150))
-# ox, oy = 200, 200
-# cv2.imshow("image 1", listImg[1].img)
-# img = Image.open("img/pieces/piece_0.png")
-# img.show()
-# img = reduceOpc(img, 0.8)
-# img.show()
-
 while True:
     success, img = cap.read()
     img = cv2.flip(img, 1)
@@ -53,7 +44,7 @@ while True:
             cursor = lmList[8]
             
             for imgObject in listImg:
-                imgObject.update(cursor)  
+                imgObject.update(cursor) 
 
     try:
         for imgObject in listImg:
