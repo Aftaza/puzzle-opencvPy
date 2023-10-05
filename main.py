@@ -2,6 +2,7 @@ import cv2
 import os
 from cvzone.HandTrackingModule import HandDetector
 from DragImg import DragImg
+from boxPiece import BoxPiece
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
@@ -20,6 +21,13 @@ def check(listImg):
             if oxi == oxj and oyi==oyj : return False
 
     return True
+
+def is_piece_in_box(self, imgObject, box):
+        ox, oy = imgObject.posOrigin
+        x1, y1 = box[0]
+        x2, y2 = box[1]
+        
+        return (x1-10 <= ox <= x2+10) and (y1-10 <= oy <= y2+10)
 
 dirPath = './img/pieceOH'
 piecePath = os.listdir(dirPath)
@@ -42,10 +50,15 @@ for x, pathPiece in enumerate(piecePath):
     
     listImg.append(DragImg(f'{dirPath}/{pathPiece}', [xPos,yPos], imgType))
 
+listBox = BoxPiece(9, (150,150), cap.read()[1].shape[:2] )
+
 while True:
     success, img = cap.read()
     img = cv2.flip(img, 1)
     hands, img = detector.findHands(img, flipType=False)
+    
+    for box in listBox.boxes:
+        cv2.rectangle(img, box[0], box[1], (0,255, 0), 3)
 
     if hands :
         lmList = hands[0]['lmList']
@@ -70,7 +83,7 @@ while True:
     except:
       pass
 
-    cv2.rectangle(img, (400, 100), (850, 550), (0, 255, 0), 5)
+    # cv2.rectangle(img, (400, 100), (850, 550), (0, 255, 0), 5)
     cv2.imshow("Image", img)
     if cv2.waitKey(1) & 0xFF == ord('q'):
       break
