@@ -9,6 +9,18 @@ cap.set(4, 720)
 
 detector = HandDetector(detectionCon=0.65)
 
+def check(listImg): 
+    for eli in listImg :
+        for elj in  listImg :
+            if eli == elj : continue
+
+            oxi, oyi = eli.posOrigin
+            oxj, oyj = elj.posOrigin
+
+            if oxi == oxj and oyi==oyj : return False
+
+    return True
+
 dirPath = './img/pieceOH'
 piecePath = os.listdir(dirPath)
 listImg = []
@@ -44,7 +56,10 @@ while True:
             cursor = lmList[8]
             
             for imgObject in listImg:
+                oxOld, oyOld = imgObject.posOrigin
                 imgObject.update(cursor) 
+                
+                if check (listImg) == False: imgObject.posOrigin = [oxOld, oyOld]
 
     try:
         for imgObject in listImg:
