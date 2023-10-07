@@ -2,6 +2,7 @@ import cv2
 import os
 from cvzone.HandTrackingModule import HandDetector
 from DragImg import DragImg
+import time
 
 
 def is_object_inside_box(imgObject, box):
@@ -31,13 +32,13 @@ def check(listImg):
     return True
 
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(3, 1280)
 cap.set(4, 720)
 
 detector = HandDetector(detectionCon=0.65)
 
-dirPath = './img/imageonline'
+dirPath = './img/newPuzzle'
 piecePath = os.listdir(dirPath)
 listImg = []
 temp = 0
@@ -66,6 +67,7 @@ for x, pathPiece in enumerate(piecePath):
 # img.show()
 # img = reduceOpc(img, 0.8)
 # img.show()
+hasil = False;
 
 while True:
     success, img = cap.read()
@@ -165,16 +167,22 @@ while True:
         #print("3");q
     
     i = 0;
-    while(i < 4) :
+    
+
+    while(i < 4 and not hasil) :
         if (ans &  (1 << i) > 0):
             temp = "Kepingan ke-" + str(i+1) + " Berhasil ditempatkan";
-            cv2.putText(img, temp, (text_x+100, text_y+100 + (100 * i)), font, font_scale, (0, 0, 0), font_thickness, lineType=cv2.LINE_AA)
+            cv2.putText(img, temp, (50+i, 610 + (30 * i)), font, font_scale, (255, 192, 203), font_thickness, lineType=cv2.LINE_AA)
 
         i+=1
 
     print(ans)
+    if ans != 15 : hasil = False;
+
     if ans == 15 :
-        #cv2.putText(img, "Berhasil", (text_x+100, text_y+100), font, font_scale, (0, 0, 0), font_thickness, lineType=cv2.LINE_AA)
+        hasil = True
+        cv2.putText(img, "Berhasil", (text_x-225, text_y+150), font, 5, (14, 255, 0), font_thickness, lineType=cv2.LINE_AA)
+
         print("Berhasil bang");
 
 
@@ -184,4 +192,25 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
       break
 
+    if cv2.waitKey(1) & 0xFF == ord('r'):
+
+        listImg = []
+        for x, pathPiece in enumerate(piecePath):
+
+            if 'png' in pathPiece:
+                imgType = 'png'
+            else:
+                imgType = 'jpg'
+            
+            if x > 5:
+                yPos = 300
+                xPos = 350 + temp * 200
+                temp += 1
+            else:
+                yPos = 100
+                xPos = 50 + x * 200
+            
+            listImg.append(DragImg(f'{dirPath}/{pathPiece}', [xPos,yPos], imgType, pathPiece))
+
+#cap.release()
 cv2.destroyAllWindows()
